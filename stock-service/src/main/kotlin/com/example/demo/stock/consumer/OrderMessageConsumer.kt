@@ -1,8 +1,8 @@
-package com.example.demo.payment.consumer
+package com.example.demo.stock.consumer
 
 import com.example.demo.domain.Order
 import com.example.demo.domain.OrderStatus
-import com.example.demo.payment.service.PaymentService
+import com.example.demo.stock.service.ProductService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -10,7 +10,7 @@ import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.stereotype.Component
 
 @Component
-class OrderMessageConsumer (val paymentService: PaymentService) {
+class OrderMessageConsumer (val productService: ProductService) {
 
     companion object {
         val logger: Logger = LoggerFactory.getLogger(OrderMessageConsumer::class.java)
@@ -20,8 +20,8 @@ class OrderMessageConsumer (val paymentService: PaymentService) {
     fun onEvent(order: Order) {
         logger.info("Event Received: $order")
         when (order.status){
-            OrderStatus.NEW -> paymentService.reserve(order)
-            else -> paymentService.confirm(order)
+            OrderStatus.NEW -> productService.reserve(order)
+            else -> productService.confirm(order)
         }
     }
 

@@ -76,7 +76,7 @@ class OrderService (
             val order = Order(
                 id = id.incrementAndGet(),
                 customerId = Random.nextInt(1, 101),
-                productId = Random.nextInt(1, 101),
+                productId = Random.nextInt(1, 11),
                 status = OrderStatus.NEW,
                 price = 100 * x,
                 productCount = x,

@@ -24,6 +24,7 @@ class PaymentService (
     }
 
     fun reserve(order: Order) {
+        logger.info("reserve order: $order")
         val customer = findCustomer(order)
         //
         if (order.price < customer.amountAvailable) {
@@ -41,6 +42,7 @@ class PaymentService (
     }
 
     fun confirm(order: Order) {
+        logger.info("confirm order: $order")
         val customer = findCustomer(order)
         //
         if (order.status == OrderStatus.CONFIRMED) {
