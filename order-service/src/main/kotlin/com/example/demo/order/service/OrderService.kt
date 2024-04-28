@@ -1,6 +1,8 @@
 package com.example.demo.order.service
 
+import com.example.demo.domain.ActSource
 import com.example.demo.domain.Order
+import com.example.demo.domain.OrderStatus
 import com.example.demo.order.configuration.TOPIC_ORDERS
 import org.apache.kafka.streams.StoreQueryParameters
 import org.apache.kafka.streams.state.QueryableStoreTypes
@@ -21,9 +23,9 @@ class OrderService (
 
     companion object {
         val id = AtomicInteger();
-        val logger = LoggerFactory.getLogger(OrderService::class.java);
-        val customerIds = listOf("C001", "C002", "C003", "C004");
-        val productIds = listOf("P100", "P101", "P102", "P103")
+        val logger : Logger = LoggerFactory.getLogger(OrderService::class.java);
+        val customerIds = listOf(100, 102, 103, 104);
+        val productIds = listOf(200, 201, 202, 203)
     }
 
     fun create(order: Order) : Order {
@@ -41,13 +43,13 @@ class OrderService (
             price = orderPayment.price
         );
 
-        if (orderPayment.status.equals("ACCEPT") && orderStock.status.equals("ACCEPT")) {
-            order.status = "CONFIRMED";
-        } else if (orderPayment.status.equals("REJECT") && orderStock.status.equals("REJECT")) {
-            order.status = "REJECTED";
-        } else if (orderPayment.status.equals("REJECT") || orderStock.status.equals("REJECT")) {
-            val source = if (orderPayment.status.equals("REJECT")) "PAYMENT" else "STOCK";
-            order.status = "ROLLBACK";
+        if (orderPayment.status == OrderStatus.ACCEPT && orderStock.status == OrderStatus.ACCEPT) {
+            order.status = OrderStatus.CONFIRMED;
+        } else if (orderPayment.status == OrderStatus.REJECT && orderStock.status == OrderStatus.REJECT) {
+            order.status = OrderStatus.REJECTED;
+        } else if (orderPayment.status == OrderStatus.REJECT || orderStock.status == OrderStatus.REJECT) {
+            val source = if (orderPayment.status == OrderStatus.REJECT) ActSource.PAYMENT else ActSource.STOCK;
+            order.status = OrderStatus.ROLLBACK;
             order.source = source;
         }
 
@@ -73,11 +75,12 @@ class OrderService (
             val x = Random.nextInt(5) + 1;
             val order = Order(
                 id = id.incrementAndGet(),
-                customerId = customerIds.random(),
-                productId = productIds.random(),
-                status = "NEW",
+                customerId = Random.nextInt(1, 101),
+                productId = Random.nextInt(1, 101),
+                status = OrderStatus.NEW,
                 price = 100 * x,
-                productCount = x
+                productCount = x,
+                source = ActSource.ORDER
             )
             sendOrder(order)
         }

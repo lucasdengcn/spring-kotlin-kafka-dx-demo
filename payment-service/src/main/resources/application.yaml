@@ -1,3 +1,4 @@
+spring.application.name: payment
 
 logging:
   level:
@@ -39,3 +40,15 @@ spring:
         session:
           events:
             log.LOG_QUERIES_SLOWER_THAN: 3
+
+spring.kafka:
+  bootstrap-servers: localhost:39192
+  producer:
+    key-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+  consumer:
+    group-id: payment
+    key-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+    value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+    properties:
+      spring.json.trusted.packages: "*"
