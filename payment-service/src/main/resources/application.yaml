@@ -12,6 +12,9 @@ logging:
     com.example.demo: DEBUG
     com.zaxxer: INFO
     org.springframework:
+      kafka:
+        support: INFO
+        transaction: DEBUG
       graphql: TRACE
       web:
         servlet.mvc: DEBUG
@@ -48,9 +51,13 @@ spring.kafka:
   producer:
     key-serializer: org.springframework.kafka.support.serializer.JsonSerializer
     value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    transaction-id-prefix: payment-tx-
   consumer:
     group-id: payment
+    auto-offset-reset: earliest
+    enable-auto-commit: false
     key-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
     value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
     properties:
       spring.json.trusted.packages: "*"
+      isolation.level: read_committed

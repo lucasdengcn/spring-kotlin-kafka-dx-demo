@@ -9,6 +9,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import kotlin.math.log
 
 @Service
@@ -22,6 +23,7 @@ class ProductService (
         val logger: Logger = LoggerFactory.getLogger(ProductService::class.java)
     }
 
+    @Transactional("transactionManager")
     fun reserve(order: Order) {
         logger.info("reserve order: $order")
         if (order.status != OrderStatus.NEW){
@@ -39,10 +41,16 @@ class ProductService (
         order.source = ActSource.STOCK
         //
         productRepository.save(product)
-        kafkaTemplate.send("stock-orders", order.id.toString(), order)
-        logger.info("Sent: $order")
+        sendMessage(order)
     }
 
+    @Transactional("kafkaTransactionManager")
+    fun sendMessage(order: Order) {
+        val future = kafkaTemplate.send("stock-orders", order.id.toString(), order)
+        future.whenComplete { t, u -> logger.info("Sent: $order") }
+    }
+
+    @Transactional("transactionManager")
     fun confirm(order: Order) {
         logger.info("confirm order: $order")
         val product = findProduct(order)

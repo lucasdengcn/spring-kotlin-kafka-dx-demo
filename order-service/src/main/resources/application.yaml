@@ -13,7 +13,8 @@ logging:
     com.zaxxer: INFO
     org.springframework:
       kafka:
-        support: DEBUG
+        support: INFO
+        transaction: DEBUG
       graphql: TRACE
       web:
         servlet.mvc: DEBUG
@@ -53,10 +54,15 @@ spring.kafka:
     #key-serializer: org.apache.kafka.common.serialization.LongSerializer
     key-serializer: org.springframework.kafka.support.serializer.JsonSerializer
     value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    transaction-id-prefix: order-tx-
   consumer:
     group-id: order
+    auto-offset-reset: earliest
+    enable-auto-commit: false
     key-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
     value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+    properties:
+      isolation.level: read_committed
   streams:
     properties:
       commit.interval.ms: 0

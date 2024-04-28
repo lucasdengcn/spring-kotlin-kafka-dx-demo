@@ -7,6 +7,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 
 @Component
 class OrderMessageConsumer (val orderService: OrderService) {
@@ -15,7 +16,8 @@ class OrderMessageConsumer (val orderService: OrderService) {
         val logger: Logger = LoggerFactory.getLogger(OrderMessageConsumer::class.java)
     }
 
-    @KafkaListener(topics = ["orders-finished"])
+    @KafkaListener(topics = ["orders-finished"], concurrency = "3")
+    @Transactional("transactionManager")
     fun onEvent(order: Order) {
         logger.info("Event Received: $order")
         when (order.status){

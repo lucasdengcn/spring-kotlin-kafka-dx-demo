@@ -28,7 +28,7 @@ class OrderService (
         val logger : Logger = LoggerFactory.getLogger(OrderService::class.java);
     }
 
-    @Transactional
+    @Transactional("transactionManager")
     fun create(order: Order) : Order {
         //
         val orderEntity = OrderEntity(
@@ -44,12 +44,17 @@ class OrderService (
         orderRepository.save(orderEntity);
         //
         order.id = orderEntity.id!!
-        sendOrder(order)
+        sendOrderMessage(order)
+        //
+        if (order.id % 3 == 1) {
+            logger.error("transactional kafka and db, $orderEntity")
+            throw RuntimeException("transactional kafka and db, id=${orderEntity.id}")
+        }
         //
         return order;
     }
 
-    @Transactional
+    @Transactional("transactionManager")
     fun confirm(orderPayment: Order, orderStock: Order) : Order {
         val order = Order(
             id = orderPayment.id,
@@ -88,16 +93,17 @@ class OrderService (
     }
 
     @Async
+    @Transactional("transactionManager")
     fun generate(limit: Int) {
         for (i in 0 until limit) {
-            val x = Random.nextInt(10, 1000);
+            val productCount = Random.nextInt(10, 1000);
             val orderEntity = OrderEntity(
                 id = null,
                 customerId = Random.nextInt(1, 101),
                 productId = Random.nextInt(1, 11),
                 status = OrderStatus.NEW,
-                price = 20 * x,
-                productCount = x,
+                price = 20 * productCount,
+                productCount = productCount,
                 source = ActSource.ORDER
             )
             //
@@ -113,17 +119,19 @@ class OrderService (
                 source =  orderEntity.source
             )
             //
-            sendOrder(order)
+            sendOrderMessage(order)
         }
     }
 
-    private fun sendOrder(order: Order) {
-        kafkaTemplate.send(TOPIC_ORDERS, order.id.toString(), order);
-        logger.info("Send: $order");
+    @Transactional("kafkaTransactionManager")
+    fun sendOrderMessage(order: Order) {
+        val future = kafkaTemplate.send(TOPIC_ORDERS, order.id.toString(), order)
+        future.whenComplete { t, u -> logger.info("Send: $order") }
+        Thread.sleep(1000)
     }
 
 
-    @Transactional
+    @Transactional("transactionManager")
     fun updateStatus(order: Order) {
         val orderEntity = orderRepository.findById(order.id).orElseThrow()
         orderEntity.status = order.status

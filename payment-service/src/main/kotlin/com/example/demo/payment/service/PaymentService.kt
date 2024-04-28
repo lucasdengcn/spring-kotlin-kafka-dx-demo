@@ -9,6 +9,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 private const val TOPIC_PAYMENT = "payment-orders"
 
@@ -22,6 +23,7 @@ class PaymentService (
         val logger: Logger = LoggerFactory.getLogger(PaymentService::class.java)
     }
 
+    @Transactional("transactionManager")
     fun reserve(order: Order) {
         logger.info("reserve order: $order")
         val customer = findCustomer(order)
@@ -36,10 +38,16 @@ class PaymentService (
         order.source = ActSource.PAYMENT
         //
         customerRepository.save(customer)
-        kafkaTemplate.send(TOPIC_PAYMENT, order.id.toString(), order)
-        logger.info("Sent: $order")
+        sendMessage(order)
     }
 
+    @Transactional("kafkaTransactionManager")
+    fun sendMessage(order: Order) {
+        val future = kafkaTemplate.send(TOPIC_PAYMENT, order.id.toString(), order)
+        future.whenComplete { t, u ->  logger.info("Sent: $order") }
+    }
+
+    @Transactional("transactionManager")
     fun confirm(order: Order) {
         logger.info("confirm order: $order")
         val customer = findCustomer(order)
