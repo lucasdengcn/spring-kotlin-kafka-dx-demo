@@ -1,4 +1,7 @@
 
+server:
+  port: 8082
+
 logging.level:
   root: INFO
   org.hibernate: ERROR
@@ -48,4 +51,4 @@ spring.kafka:
     key-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
     value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
     properties:
-      spring.json.trusted.packages: "*"
+      spring.kafka.json.trusted.packages: "*"

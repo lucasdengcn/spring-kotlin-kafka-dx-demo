@@ -4,7 +4,7 @@ plugins {
 }
 
 bootJar {
-    mainClass = 'com.example.demo.order.OrderApplication'
+    mainClass = 'com.example.demo.order.OrderApplicationKt'
 }
 
 springBoot {
@@ -41,26 +41,25 @@ dependencies {
     testImplementation 'org.wiremock:wiremock:3.5.2'
 }
 
-//publishing {
-//    publications {
-//        bootJava(MavenPublication) {
-//            artifact tasks.named("bootJar")
-//        }
-//    }
-//}
+publishing {
+    publications {
+        bootJava(MavenPublication) {
+            artifact tasks.named("bootJar")
+        }
+    }
+}
 
 tasks.named("bootJar") {
     archiveClassifier = 'boot'
-    enabled = false
-//    manifest {
-//        attributes (
-//            'Main-Class': 'org.springframework.boot.loader.launch.JarLauncher'
-//        )
-//    }
+    manifest {
+        attributes (
+            'Main-Class': 'org.springframework.boot.loader.launch.JarLauncher'
+        )
+    }
 }
 
 tasks.named("bootRun") {
-    mainClass = 'com.example.demo.order.OrderApplication'
+    mainClass = 'com.example.demo.order.OrderApplicationKt'
 }
 
 

@@ -39,7 +39,7 @@ class ProductService (
         order.source = ActSource.STOCK
         //
         productRepository.save(product)
-        kafkaTemplate.send("orders-stock", order.id.toString(), order)
+        kafkaTemplate.send("stock-orders", order.id.toString(), order)
         logger.info("Sent: $order")
     }
 

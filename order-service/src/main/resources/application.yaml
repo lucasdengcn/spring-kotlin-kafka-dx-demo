@@ -1,5 +1,8 @@
 spring.application.name: orders
 
+server:
+  port: 8081
+
 logging:
   level:
     root: INFO
@@ -9,47 +12,55 @@ logging:
     com.example.demo: DEBUG
     com.zaxxer: INFO
     org.springframework:
+      kafka:
+        support: DEBUG
       graphql: TRACE
       web:
         servlet.mvc: DEBUG
         client.RestClient: DEBUG
 
-spring:
-  datasource:
-    hikari:
-      connectionTimeout: 20000
-      maximumPoolSize: 5
-    type: com.zaxxer.hikari.HikariDataSource
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:15432/postgres?currentSchema=order-service&autoReconnect=true&serverTimezone=UTC&characterEncoding=utf-8&allowMultiQueries=true&stringtype=unspecified
-    username: postgres
-    password: pgdev01
+spring.datasource:
+  hikari:
+    connectionTimeout: 20000
+    maximumPoolSize: 5
+  type: com.zaxxer.hikari.HikariDataSource
+  driver-class-name: org.postgresql.Driver
+  url: jdbc:postgresql://localhost:15432/postgres?currentSchema=order-service&autoReconnect=true&serverTimezone=UTC&characterEncoding=utf-8&allowMultiQueries=true&stringtype=unspecified
+  username: postgres
+  password: pgdev01
 
-  jpa:
+spring.jpa:
+  hibernate:
+    ddl-auto: none
+  show-sql: false
+  properties:
     hibernate:
-      ddl-auto: none
-    show-sql: false
-    properties:
-      hibernate:
-        jdbc.batch_size: 100
-        order_inserts: true
-        order_updates: true
-        batch_versioned_data: true
-        generate_statistics: true
-        query.in_clause_parameter_padding: true
-        session:
-          events:
-            log.LOG_QUERIES_SLOWER_THAN: 3
+      jdbc.batch_size: 100
+      order_inserts: true
+      order_updates: true
+      batch_versioned_data: true
+      generate_statistics: true
+      query.in_clause_parameter_padding: true
+      session:
+        events:
+          log.LOG_QUERIES_SLOWER_THAN: 3
 
 spring.kafka:
   bootstrap-servers: localhost:39192
+  properties:
+    spring.json.trusted.packages: "*"
   producer:
     #key-serializer: org.apache.kafka.common.serialization.LongSerializer
     key-serializer: org.springframework.kafka.support.serializer.JsonSerializer
     value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+  consumer:
+    group-id: order
+    key-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+    value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
   streams:
     properties:
-      default.key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+      commit.interval.ms: 0
+      processing.guarantee: exactly_once
+      default.key.serde: org.springframework.kafka.support.serializer.JsonSerde
       default.value.serde: org.springframework.kafka.support.serializer.JsonSerde
-      spring.json.trusted.packages: "*"
-    state-dir: /tmp/kafka-streams/
+

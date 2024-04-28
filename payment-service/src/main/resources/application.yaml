@@ -1,5 +1,8 @@
 spring.application.name: payment
 
+server:
+  port: 8080
+
 logging:
   level:
     root: INFO
@@ -14,32 +17,31 @@ logging:
         servlet.mvc: DEBUG
         client.RestClient: DEBUG
 
-spring:
-  datasource:
-    hikari:
-      connectionTimeout: 20000
-      maximumPoolSize: 5
-    type: com.zaxxer.hikari.HikariDataSource
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:15432/postgres?currentSchema=payment-service&autoReconnect=true&serverTimezone=UTC&characterEncoding=utf-8&allowMultiQueries=true&stringtype=unspecified
-    username: postgres
-    password: pgdev01
+spring.datasource:
+  hikari:
+    connectionTimeout: 20000
+    maximumPoolSize: 5
+  type: com.zaxxer.hikari.HikariDataSource
+  driver-class-name: org.postgresql.Driver
+  url: jdbc:postgresql://localhost:15432/postgres?currentSchema=payment-service&autoReconnect=true&serverTimezone=UTC&characterEncoding=utf-8&allowMultiQueries=true&stringtype=unspecified
+  username: postgres
+  password: pgdev01
 
-  jpa:
+spring.jpa:
+  hibernate:
+    ddl-auto: none
+  show-sql: false
+  properties:
     hibernate:
-      ddl-auto: none
-    show-sql: false
-    properties:
-      hibernate:
-        jdbc.batch_size: 100
-        order_inserts: true
-        order_updates: true
-        batch_versioned_data: true
-        generate_statistics: true
-        query.in_clause_parameter_padding: true
-        session:
-          events:
-            log.LOG_QUERIES_SLOWER_THAN: 3
+      jdbc.batch_size: 100
+      order_inserts: true
+      order_updates: true
+      batch_versioned_data: true
+      generate_statistics: true
+      query.in_clause_parameter_padding: true
+      session:
+        events:
+          log.LOG_QUERIES_SLOWER_THAN: 3
 
 spring.kafka:
   bootstrap-servers: localhost:39192
@@ -51,4 +53,4 @@ spring.kafka:
     key-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
     value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
     properties:
-      spring.json.trusted.packages: "*"
+      spring.kafka.json.trusted.packages: "*"

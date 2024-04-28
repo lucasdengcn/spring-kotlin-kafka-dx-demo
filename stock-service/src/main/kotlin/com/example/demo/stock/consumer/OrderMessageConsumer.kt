@@ -16,7 +16,7 @@ class OrderMessageConsumer (val productService: ProductService) {
         val logger: Logger = LoggerFactory.getLogger(OrderMessageConsumer::class.java)
     }
 
-    @KafkaListener(id = "orders", topics = ["orders"])
+    @KafkaListener(topics = ["orders"])
     fun onEvent(order: Order) {
         logger.info("Event Received: $order")
         when (order.status){

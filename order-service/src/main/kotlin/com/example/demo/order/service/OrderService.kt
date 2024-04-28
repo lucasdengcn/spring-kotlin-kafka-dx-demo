@@ -4,6 +4,8 @@ import com.example.demo.domain.ActSource
 import com.example.demo.domain.Order
 import com.example.demo.domain.OrderStatus
 import com.example.demo.order.configuration.TOPIC_ORDERS
+import com.example.demo.order.entity.OrderEntity
+import com.example.demo.order.repository.OrderRepository
 import org.apache.kafka.streams.StoreQueryParameters
 import org.apache.kafka.streams.state.QueryableStoreTypes
 import org.slf4j.Logger
@@ -12,28 +14,42 @@ import org.springframework.kafka.config.StreamsBuilderFactoryBean
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
-import java.util.concurrent.atomic.AtomicInteger
+import org.springframework.transaction.annotation.Transactional
 import kotlin.random.Random
 
 @Service
 class OrderService (
+    val orderRepository: OrderRepository,
     val kafkaTemplate: KafkaTemplate<String, Order>,
     val kafkaStreamFactorBean: StreamsBuilderFactoryBean
 ) {
 
     companion object {
-        val id = AtomicInteger();
         val logger : Logger = LoggerFactory.getLogger(OrderService::class.java);
-        val customerIds = listOf(100, 102, 103, 104);
-        val productIds = listOf(200, 201, 202, 203)
     }
 
+    @Transactional
     fun create(order: Order) : Order {
-        order.id = id.incrementAndGet();
+        //
+        val orderEntity = OrderEntity(
+            id = null,
+            customerId = Random.nextInt(1, 101),
+            productId = Random.nextInt(1, 11),
+            status = OrderStatus.NEW,
+            price = order.price,
+            productCount = order.productCount,
+            source = ActSource.ORDER
+        )
+        //
+        orderRepository.save(orderEntity);
+        //
+        order.id = orderEntity.id!!
         sendOrder(order)
+        //
         return order;
     }
 
+    @Transactional
     fun confirm(orderPayment: Order, orderStock: Order) : Order {
         val order = Order(
             id = orderPayment.id,
@@ -52,7 +68,18 @@ class OrderService (
             order.status = OrderStatus.ROLLBACK;
             order.source = source;
         }
-
+        //
+//        val orderEntity = OrderEntity(
+//            id = orderPayment.id,
+//            customerId = orderPayment.customerId,
+//            productId = orderPayment.productId,
+//            productCount = orderPayment.productCount,
+//            price = orderPayment.price,
+//            status = order.status,
+//            source = order.source
+//        )
+//        orderRepository.save(orderEntity)
+        //
         logger.info("confirm: payment:${orderPayment.status}, stock:${orderStock.status}, $order");
         return order;
     }
@@ -72,16 +99,29 @@ class OrderService (
     @Async
     fun generate(limit: Int) {
         for (i in 0 until limit) {
-            val x = Random.nextInt(5) + 1;
-            val order = Order(
-                id = id.incrementAndGet(),
+            val x = Random.nextInt(1, 5);
+            val orderEntity = OrderEntity(
+                id = null,
                 customerId = Random.nextInt(1, 101),
                 productId = Random.nextInt(1, 11),
                 status = OrderStatus.NEW,
-                price = 100 * x,
+                price = 20 * x,
                 productCount = x,
                 source = ActSource.ORDER
             )
+            //
+            orderRepository.save(orderEntity);
+            //
+            val order = Order(
+                id = orderEntity.id!!,
+                customerId = orderEntity.customerId!!,
+                productId = orderEntity.productId!!,
+                status = orderEntity.status,
+                price = orderEntity.price!!,
+                productCount = orderEntity.productCount!!,
+                source =  orderEntity.source
+            )
+            //
             sendOrder(order)
         }
     }

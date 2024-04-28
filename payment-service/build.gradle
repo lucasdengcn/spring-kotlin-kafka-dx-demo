@@ -3,9 +3,9 @@ plugins {
     id 'org.springframework.boot' version '3.2.5'
 }
 
-//bootJar {
-//    mainClass = 'com.example.demo.payment.PaymentApplication'
-//}
+bootJar {
+    mainClass = 'com.example.demo.payment.PaymentApplicationKt'
+}
 
 springBoot {
     buildInfo()
@@ -42,26 +42,25 @@ dependencies {
     testImplementation 'net.datafaker:datafaker:2.2.2'
 }
 
-//publishing {
-//    publications {
-//        bootJava(MavenPublication) {
-//            artifact tasks.named("bootJar")
-//        }
-//    }
-//}
+publishing {
+    publications {
+        bootJava(MavenPublication) {
+            artifact tasks.named("bootJar")
+        }
+    }
+}
 
 tasks.named("bootJar") {
     archiveClassifier = 'boot'
-    enabled = false
-//    manifest {
-//        attributes (
-//            'Main-Class': 'org.springframework.boot.loader.launch.JarLauncher'
-//        )
-//    }
+    manifest {
+        attributes (
+            'Main-Class': 'org.springframework.boot.loader.launch.JarLauncher'
+        )
+    }
 }
 
 tasks.named("bootRun") {
-    mainClass = 'com.example.demo.payment.PaymentApplication'
+    mainClass = 'com.example.demo.payment.PaymentApplicationKt'
 }
 
 

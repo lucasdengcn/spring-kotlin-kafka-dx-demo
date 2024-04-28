@@ -5,13 +5,12 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.kafka.config.TopicBuilder
 
+
 const val TOPIC_ORDERS = "orders"
 
 const val TOPIC_PAYMENT_ORDERS = "payment-orders"
 
 const val TOPIC_STOCK_ORDERS = "stock-orders"
-
-const val TABLE_ORDERS = "tbl-orders"
 
 @Configuration
 class KafkaTopicsConfig {
