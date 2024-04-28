@@ -1,0 +1,41 @@
+
+logging:
+  level:
+    root: INFO
+    org.hibernate: ERROR
+    org.hibernate.stat: INFO
+    org.hibernate.SQL: DEBUG
+    com.example.demo: DEBUG
+    com.zaxxer: INFO
+    org.springframework:
+      graphql: TRACE
+      web:
+        servlet.mvc: DEBUG
+        client.RestClient: DEBUG
+
+spring:
+  datasource:
+    hikari:
+      connectionTimeout: 20000
+      maximumPoolSize: 5
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:15432/postgres?currentSchema=stock-service&autoReconnect=true&serverTimezone=UTC&characterEncoding=utf-8&allowMultiQueries=true&stringtype=unspecified
+    username: postgres
+    password: pgdev01
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    properties:
+      hibernate:
+        jdbc.batch_size: 100
+        order_inserts: true
+        order_updates: true
+        batch_versioned_data: true
+        generate_statistics: true
+        query.in_clause_parameter_padding: true
+        session:
+          events:
+            log.LOG_QUERIES_SLOWER_THAN: 3

@@ -1,0 +1,68 @@
+plugins {
+    id 'java-library'
+    id 'org.springframework.boot' version '3.2.5'
+}
+
+//bootJar {
+//    mainClass = 'com.example.demo.payment.PaymentApplication'
+//}
+
+springBoot {
+    buildInfo()
+}
+
+dependencies {
+    implementation(project(':domain'))
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    //implementation 'org.springframework.boot:spring-boot-starter-graphql'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    //implementation 'de.codecentric:spring-boot-admin-starter-server'
+    implementation 'io.micrometer:micrometer-tracing-bridge-brave'
+    implementation 'org.flywaydb:flyway-core'
+    implementation 'org.springframework.kafka:spring-kafka'
+    implementation 'org.apache.kafka:kafka-streams'
+    //
+    // implementation 'org.hibernate.orm:hibernate-envers:6.4.4.Final'
+    //
+    //implementation 'net.ttddyy:datasource-proxy:1.10'
+    //implementation 'com.tailrocks.graphql:graphql-datetime-spring-boot-starter:6.0.0'
+    //
+    implementation 'org.postgresql:postgresql'
+    //
+    //testImplementation 'org.springframework:spring-webflux'
+    //testImplementation 'org.springframework.graphql:spring-graphql-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.kafka:spring-kafka-test'
+    //testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+    // https://mvnrepository.com/artifact/org.wiremock/wiremock
+    testImplementation 'org.wiremock:wiremock:3.5.2'
+}
+
+//publishing {
+//    publications {
+//        bootJava(MavenPublication) {
+//            artifact tasks.named("bootJar")
+//        }
+//    }
+//}
+
+tasks.named("bootJar") {
+    archiveClassifier = 'boot'
+    enabled = false
+//    manifest {
+//        attributes (
+//            'Main-Class': 'org.springframework.boot.loader.launch.JarLauncher'
+//        )
+//    }
+}
+
+tasks.named("bootRun") {
+    mainClass = 'com.example.demo.payment.PaymentApplication'
+}
+
+
+
+

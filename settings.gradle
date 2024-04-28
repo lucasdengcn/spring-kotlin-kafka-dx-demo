@@ -1,1 +1,16 @@
-rootProject.name = 'demo'
+pluginManagement {
+    repositories {
+        maven {
+            url 'https://maven.aliyun.com/repository/gradle-plugin'
+        }
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+rootProject.name = 'spring-kotlin-kafka-dx-demo'
+
+include 'domain'
+include 'order-service'
+include 'payment-service'
+include 'stock-service'

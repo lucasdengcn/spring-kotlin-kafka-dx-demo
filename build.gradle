@@ -1,47 +1,104 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-	id 'org.springframework.boot' version '3.2.5'
+	id 'java'
+	id 'maven-publish'
 	id 'io.spring.dependency-management' version '1.1.4'
 	id 'org.jetbrains.kotlin.jvm' version '1.9.23'
 	id 'org.jetbrains.kotlin.plugin.spring' version '1.9.23'
 	id 'org.jetbrains.kotlin.plugin.jpa' version '1.9.23'
 }
 
-group = 'com.example'
+group = 'com.example.demo'
 version = '0.0.1-SNAPSHOT'
 
 java {
 	sourceCompatibility = '21'
 }
 
-repositories {
-	mavenCentral()
-}
-
-dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
-	implementation 'org.apache.kafka:kafka-streams'
-	implementation 'org.flywaydb:flyway-core'
-	implementation 'org.jetbrains.kotlin:kotlin-reflect'
-	implementation 'org.springframework.kafka:spring-kafka'
-	runtimeOnly 'org.postgresql:postgresql'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.kafka:spring-kafka-test'
-}
-
-tasks.withType(KotlinCompile) {
-	kotlinOptions {
-		freeCompilerArgs += '-Xjsr305=strict'
-		jvmTarget = '21'
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
 	}
 }
 
-tasks.named('test') {
-	useJUnitPlatform()
+ext {
+	set('snippetsDir', file("build/generated-snippets"))
+	set('springBootVersion', '3.2.5')
+	set('springBootAdminVersion', "3.2.1")
+	set('springCloudVersion', "2023.0.0")
+	set('mapStructVersion', "1.5.5.Final")
+	set('lombokMapstructBindingVersion', "0.2.0")
+}
+
+allprojects {
+	repositories {
+		maven {
+			url 'https://maven.aliyun.com/repository/public/'
+		}
+		maven {
+			url 'https://maven.aliyun.com/repository/spring/'
+		}
+		maven {
+			url 'https://maven.aliyun.com/repository/gradle-plugin'
+		}
+		mavenLocal()
+		mavenCentral()
+	}
+}
+
+kotlin {
+	jvmToolchain(21)
+}
+
+subprojects {
+	apply plugin: 'java'
+	apply plugin: 'io.spring.dependency-management'
+	apply plugin: 'org.jetbrains.kotlin.jvm'
+	apply plugin: 'org.jetbrains.kotlin.plugin.spring'
+	apply plugin: 'org.jetbrains.kotlin.plugin.jpa'
+	apply plugin: 'maven-publish'
+
+	group = 'com.example.demo'
+	version = '0.0.1-SNAPSHOT'
+
+	java {
+		sourceCompatibility = '21'
+	}
+
+	dependencyManagement {
+		imports {
+			mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
+			mavenBom "de.codecentric:spring-boot-admin-dependencies:${springBootAdminVersion}"
+			mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+		}
+	}
+
+	dependencies {
+		implementation 'org.springframework.boot:spring-boot-starter-actuator'
+		implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+		implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+		implementation 'org.springframework.boot:spring-boot-starter-validation'
+		implementation 'org.springframework.boot:spring-boot-starter-web'
+		implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
+		implementation 'org.apache.kafka:kafka-streams'
+		implementation 'org.flywaydb:flyway-core'
+		implementation 'org.jetbrains.kotlin:kotlin-reflect'
+		implementation 'org.springframework.kafka:spring-kafka'
+		runtimeOnly 'org.postgresql:postgresql'
+		testImplementation 'org.springframework.boot:spring-boot-starter-test'
+		testImplementation 'org.springframework.kafka:spring-kafka-test'
+	}
+
+	tasks.withType(KotlinCompile) {
+		kotlinOptions {
+			freeCompilerArgs += '-Xjsr305=strict'
+			jvmTarget = '21'
+		}
+	}
+
+	tasks.named('test') {
+		useJUnitPlatform()
+	}
+
 }
