@@ -16,7 +16,11 @@ class OrderEntity (
     val productId: Int?,
     val productCount: Int?,
     val price: Int?,
+
+    @Enumerated(EnumType.STRING)
     var status: OrderStatus = OrderStatus.NEW,
+
+    @Enumerated(EnumType.STRING)
     var source: ActSource = ActSource.ORDER
 ) {
 

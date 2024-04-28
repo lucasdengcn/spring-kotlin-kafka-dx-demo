@@ -1,7 +1,7 @@
 package com.example.demo.payment.repository
 
 import com.example.demo.payment.entity.Customer
-import org.springframework.data.repository.CrudRepository
+import org.springframework.data.jpa.repository.JpaRepository
 
-interface CustomerRepository : CrudRepository<Customer, Int> {
+interface CustomerRepository : JpaRepository<Customer, Int> {
 }

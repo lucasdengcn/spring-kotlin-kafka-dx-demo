@@ -62,23 +62,14 @@ class OrderService (
         if (orderPayment.status == OrderStatus.ACCEPT && orderStock.status == OrderStatus.ACCEPT) {
             order.status = OrderStatus.CONFIRMED;
         } else if (orderPayment.status == OrderStatus.REJECT && orderStock.status == OrderStatus.REJECT) {
+            val source = if (orderPayment.status == OrderStatus.REJECT) ActSource.PAYMENT else ActSource.STOCK;
             order.status = OrderStatus.REJECTED;
+            order.source = source;
         } else if (orderPayment.status == OrderStatus.REJECT || orderStock.status == OrderStatus.REJECT) {
             val source = if (orderPayment.status == OrderStatus.REJECT) ActSource.PAYMENT else ActSource.STOCK;
             order.status = OrderStatus.ROLLBACK;
             order.source = source;
         }
-        //
-//        val orderEntity = OrderEntity(
-//            id = orderPayment.id,
-//            customerId = orderPayment.customerId,
-//            productId = orderPayment.productId,
-//            productCount = orderPayment.productCount,
-//            price = orderPayment.price,
-//            status = order.status,
-//            source = order.source
-//        )
-//        orderRepository.save(orderEntity)
         //
         logger.info("confirm: payment:${orderPayment.status}, stock:${orderStock.status}, $order");
         return order;
@@ -99,7 +90,7 @@ class OrderService (
     @Async
     fun generate(limit: Int) {
         for (i in 0 until limit) {
-            val x = Random.nextInt(1, 5);
+            val x = Random.nextInt(10, 1000);
             val orderEntity = OrderEntity(
                 id = null,
                 customerId = Random.nextInt(1, 101),
@@ -129,6 +120,16 @@ class OrderService (
     private fun sendOrder(order: Order) {
         kafkaTemplate.send(TOPIC_ORDERS, order.id.toString(), order);
         logger.info("Send: $order");
+    }
+
+
+    @Transactional
+    fun updateStatus(order: Order) {
+        val orderEntity = orderRepository.findById(order.id).orElseThrow()
+        orderEntity.status = order.status
+        orderEntity.source = order.source
+        orderRepository.save(orderEntity)
+        logger.info("updateStatus: $order");
     }
 
 }

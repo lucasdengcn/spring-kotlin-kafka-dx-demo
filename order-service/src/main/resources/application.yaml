@@ -1,7 +1,7 @@
 spring.application.name: orders
 
 server:
-  port: 8081
+  port: 8083
 
 logging:
   level:
@@ -63,4 +63,5 @@ spring.kafka:
       processing.guarantee: exactly_once
       default.key.serde: org.springframework.kafka.support.serializer.JsonSerde
       default.value.serde: org.springframework.kafka.support.serializer.JsonSerde
+    state-dir: /tmp/kafka-streams-1
 

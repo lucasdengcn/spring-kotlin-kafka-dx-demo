@@ -2,6 +2,7 @@ package com.example.demo.order.stream
 
 import com.example.demo.domain.Order
 import com.example.demo.order.configuration.TOPIC_ORDERS
+import com.example.demo.order.configuration.TOPIC_ORDERS_FINISHED
 import com.example.demo.order.configuration.TOPIC_PAYMENT_ORDERS
 import com.example.demo.order.configuration.TOPIC_STOCK_ORDERS
 import com.example.demo.order.service.OrderService
@@ -31,7 +32,7 @@ class OrderStream {
     @Bean
     fun stream(builder: StreamsBuilder, orderService: OrderService) : KStream<String, Order> {
         //
-        orderValueSerde.configure(mapOf(JsonDeserializer.TRUSTED_PACKAGES to "*"), true)
+        orderValueSerde.configure(mapOf(JsonDeserializer.TRUSTED_PACKAGES to "*"), false)
         keySerde.configure(mapOf(JsonDeserializer.TRUSTED_PACKAGES to "*"), true)
         //
         val stream = builder.stream<String, Order>(TOPIC_PAYMENT_ORDERS,
@@ -42,8 +43,8 @@ class OrderStream {
             orderService::confirm,
             JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofSeconds(10)),
             StreamJoined.with(keySerde, orderValueSerde, orderValueSerde)
-        ).peek { key, value ->  logger.info("Output: $value")}
-            .to(TOPIC_ORDERS)
+        ).peek { key, value ->  logger.info("Output: $key, $value")}
+            .to(TOPIC_ORDERS_FINISHED)
         //
         return stream;
     }

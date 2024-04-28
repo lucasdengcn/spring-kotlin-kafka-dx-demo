@@ -1,26 +1,28 @@
-package com.example.demo.payment.consumer
+package com.example.demo.order.consumer
 
 import com.example.demo.domain.Order
 import com.example.demo.domain.OrderStatus
-import com.example.demo.payment.service.PaymentService
+import com.example.demo.order.service.OrderService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.stereotype.Component
 
 @Component
-class OrderMessageConsumer (val paymentService: PaymentService) {
+class OrderMessageConsumer (val orderService: OrderService) {
 
     companion object {
         val logger: Logger = LoggerFactory.getLogger(OrderMessageConsumer::class.java)
     }
 
-    @KafkaListener(topics = ["orders", "orders-finished"])
+    @KafkaListener(topics = ["orders-finished"])
     fun onEvent(order: Order) {
         logger.info("Event Received: $order")
         when (order.status){
-            OrderStatus.NEW -> paymentService.reserve(order)
-            else -> paymentService.confirm(order)
+            OrderStatus.CONFIRMED -> orderService.updateStatus(order)
+            OrderStatus.REJECTED -> orderService.updateStatus(order)
+            OrderStatus.ROLLBACK -> orderService.updateStatus(order)
+            else -> logger.info("incorrect status: $order")
         }
     }
 

@@ -1,7 +1,7 @@
 package com.example.demo.stock.repository
 
 import com.example.demo.stock.entity.Product
-import org.springframework.data.repository.CrudRepository
+import org.springframework.data.jpa.repository.JpaRepository
 
-interface ProductRepository : CrudRepository<Product, Int> {
+interface ProductRepository : JpaRepository<Product, Int> {
 }

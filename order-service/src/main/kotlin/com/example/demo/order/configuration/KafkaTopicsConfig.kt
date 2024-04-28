@@ -12,12 +12,19 @@ const val TOPIC_PAYMENT_ORDERS = "payment-orders"
 
 const val TOPIC_STOCK_ORDERS = "stock-orders"
 
+const val TOPIC_ORDERS_FINISHED = "orders-finished"
+
 @Configuration
 class KafkaTopicsConfig {
 
     @Bean
     fun orders() : NewTopic {
         return TopicBuilder.name(TOPIC_ORDERS).partitions(3).compact().build();
+    }
+
+    @Bean
+    fun ordersFinished() : NewTopic {
+        return TopicBuilder.name(TOPIC_ORDERS_FINISHED).partitions(3).compact().build();
     }
 
     @Bean
