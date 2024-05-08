@@ -1,6 +1,7 @@
+spring.application.name: stock
 
 server:
-  port: 8082
+  port: ${APP_PORT:8082}
 
 logging.level:
   root: INFO
@@ -24,9 +25,9 @@ spring.datasource:
     maximumPoolSize: 5
   type: com.zaxxer.hikari.HikariDataSource
   driver-class-name: org.postgresql.Driver
-  url: jdbc:postgresql://localhost:15432/postgres?currentSchema=stock-service&autoReconnect=true&serverTimezone=UTC&characterEncoding=utf-8&allowMultiQueries=true&stringtype=unspecified
-  username: postgres
-  password: pgdev01
+  url: jdbc:postgresql://${PG_HOST:localhost:15432}/postgres?currentSchema=${PG_SCHEMA:stock-service}&autoReconnect=true&serverTimezone=UTC&characterEncoding=utf-8&allowMultiQueries=true&stringtype=unspecified
+  username: ${PG_USER:postgres}
+  password: ${PG_PASSWORD:pgdev01}
 
 spring.jpa:
   hibernate:
@@ -45,13 +46,13 @@ spring.jpa:
           log.LOG_QUERIES_SLOWER_THAN: 3
 
 spring.kafka:
-  bootstrap-servers: localhost:39192
+  bootstrap-servers: ${KAFKA_HOST:localhost:39192}
   producer:
     key-serializer: org.springframework.kafka.support.serializer.JsonSerializer
     value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-    transaction-id-prefix: stock-tx-
+    transaction-id-prefix: ${KAFKA_TX_ID:stock-tx-}
   consumer:
-    group-id: stock
+    group-id: ${KAFKA_CONSUMER_GROUP_ID:stock}
     auto-offset-reset: earliest
     enable-auto-commit: false
     key-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer

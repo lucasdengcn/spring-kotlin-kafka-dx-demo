@@ -1,0 +1,72 @@
+version: "3.3"
+services:
+  orders:
+    image: local/order-service:latest
+    hostname: order-service
+    environment:
+      APP_NAME: order-service
+      APP_PORT: 8080
+      APP_PROFILE: test
+      PYROSCOPE_SERVER_ADDRESS: http://pyroscope1:4040
+      OTEL_SERVER_ADDRESS: http://tempo1:4317
+      PG_USER: postgres
+      PG_PASSWORD: pgdev01
+      PG_HOST: postgres:5432
+      KAFKA_HOST: kafka-kraft1:9092
+      KAFKA_TOPICS: orders-finished
+    restart: unless-stopped
+    volumes:
+      - ./logs/orders:/app/logs
+    networks:
+      - local_app
+    ports:
+      - 48080:8080
+
+  payments:
+    image: local/payment-service:latest
+    hostname: payment-service
+    environment:
+      APP_NAME: payment-service
+      APP_PORT: 8080
+      APP_PROFILE: test
+      PYROSCOPE_SERVER_ADDRESS: http://pyroscope1:4040
+      OTEL_SERVER_ADDRESS: http://tempo1:4317
+      PG_USER: postgres
+      PG_PASSWORD: pgdev01
+      PG_HOST: postgres:5432
+      KAFKA_HOST: kafka-kraft1:9092
+      KAFKA_TOPICS: orders,orders-finished
+    restart: unless-stopped
+    volumes:
+      - ./logs/payments:/app/logs
+    networks:
+      - local_app
+    ports:
+      - 48081:8080
+
+  stocks:
+    image: local/stock-service:latest
+    hostname: stock-service
+    environment:
+      APP_NAME: stock-service
+      APP_PORT: 8080
+      APP_PROFILE: test
+      PYROSCOPE_SERVER_ADDRESS: http://pyroscope1:4040
+      OTEL_SERVER_ADDRESS: http://tempo1:4317
+      PG_USER: postgres
+      PG_PASSWORD: pgdev01
+      PG_HOST: postgres:5432
+      KAFKA_HOST: kafka-kraft1:9092
+      KAFKA_TOPICS: orders,orders-finished
+    restart: unless-stopped
+    volumes:
+      - ./logs/stocks:/app/logs
+    networks:
+      - local_app
+    ports:
+      - 48082:8080
+
+networks:
+  local_app:
+    name: local_bridge
+    external: true
