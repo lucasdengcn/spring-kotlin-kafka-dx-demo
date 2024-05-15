@@ -4,12 +4,16 @@ import com.example.demo.domain.ActSource
 import com.example.demo.domain.Order
 import com.example.demo.domain.OrderStatus
 import com.example.demo.payment.entity.Customer
+import com.example.demo.payment.exception.BusinessException
+import com.example.demo.payment.model.OrderPaymentStatus
 import com.example.demo.payment.repository.CustomerRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicLong
 
 private const val TOPIC_PAYMENT = "payment-orders"
 
@@ -21,6 +25,7 @@ class PaymentService (
 
     companion object {
         val logger: Logger = LoggerFactory.getLogger(PaymentService::class.java)
+        val counter : AtomicInteger = AtomicInteger();
     }
 
     @Transactional("transactionManager")
@@ -67,4 +72,24 @@ class PaymentService (
         logger.info("Found: $customer")
         return customer
     }
+
+
+    fun getPaymentStatusByOrderId(id: Int): OrderPaymentStatus? {
+        if (id % 3 == 0){
+            throw BusinessException("order id $id not found")
+        }
+        val count = counter.incrementAndGet()
+        logger.info("getPaymentStatusByOrderId: $id, $count")
+        if (count % 3 == 0){
+            throw BusinessException("order id $id: unexpected error")
+        }
+        if (id % 5 == 0){
+            return OrderPaymentStatus(id, 0, "Failed");
+        }
+        if (id % 2 == 0){
+            return OrderPaymentStatus(id, 1, "Ongoing");
+        }
+        return OrderPaymentStatus(id, 2, "Payed");
+    }
+
 }

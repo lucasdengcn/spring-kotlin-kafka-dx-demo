@@ -25,13 +25,20 @@ dependencies {
     implementation 'org.springframework.kafka:spring-kafka'
     implementation 'org.apache.kafka:kafka-streams'
     //
+    implementation "io.github.resilience4j:resilience4j-spring-boot3"
+    implementation "io.github.resilience4j:resilience4j-all"
+    implementation "io.github.resilience4j:resilience4j-kotlin"
+    //
+    implementation 'io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.3.0'
+    //
     // implementation 'org.hibernate.orm:hibernate-envers:6.4.4.Final'
     //
     //implementation 'net.ttddyy:datasource-proxy:1.10'
     //implementation 'com.tailrocks.graphql:graphql-datetime-spring-boot-starter:6.0.0'
     //
     implementation 'org.postgresql:postgresql'
-    //
+    runtimeOnly 'io.opentelemetry.instrumentation:opentelemetry-logback-mdc-1.0:2.3.0-alpha'
+
     //testImplementation 'org.springframework:spring-webflux'
     //testImplementation 'org.springframework.graphql:spring-graphql-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'

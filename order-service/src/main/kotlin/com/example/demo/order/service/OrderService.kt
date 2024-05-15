@@ -1,11 +1,25 @@
 package com.example.demo.order.service
 
+import brave.propagation.TraceContext
 import com.example.demo.domain.ActSource
 import com.example.demo.domain.Order
 import com.example.demo.domain.OrderStatus
 import com.example.demo.order.configuration.TOPIC_ORDERS
 import com.example.demo.order.entity.OrderEntity
+import com.example.demo.order.exception.BusinessException
+import com.example.demo.order.integration.payment.PaymentServiceClient
+import com.example.demo.order.integration.payment.model.OrderPaymentStatus
 import com.example.demo.order.repository.OrderRepository
+import com.example.demo.order.telementry.TraceHolder
+import io.github.resilience4j.bulkhead.annotation.Bulkhead
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker
+import io.github.resilience4j.retry.annotation.Retry
+import io.github.resilience4j.timelimiter.annotation.TimeLimiter
+import io.netty.util.concurrent.CompleteFuture
+import io.opentelemetry.api.OpenTelemetry
+import io.opentelemetry.api.trace.SpanContext
+import io.opentelemetry.api.trace.TracerProvider
+import io.opentelemetry.instrumentation.annotations.WithSpan
 import org.apache.kafka.streams.StoreQueryParameters
 import org.apache.kafka.streams.state.QueryableStoreTypes
 import org.slf4j.Logger
@@ -21,7 +35,8 @@ import kotlin.random.Random
 class OrderService (
     val orderRepository: OrderRepository,
     val kafkaTemplate: KafkaTemplate<String, Order>,
-    val kafkaStreamFactorBean: StreamsBuilderFactoryBean
+    val kafkaStreamFactorBean: StreamsBuilderFactoryBean,
+    val paymentServiceClient: PaymentServiceClient
 ) {
 
     companion object {
@@ -138,6 +153,22 @@ class OrderService (
         orderEntity.source = order.source
         orderRepository.save(orderEntity)
         logger.info("updateStatus: $order");
+    }
+
+    @WithSpan
+    fun getPaymentStatus(id: Int): OrderPaymentStatus? {
+        logger.info("trace id: ${TraceHolder.currentTraceId()}")
+        val orderEntity = orderRepository.findById(id).orElseThrow()
+        return paymentServiceClient.getPaymentStatus(id);
+    }
+
+    @Retry(name = "payment")
+    @Bulkhead(name = "payment", type = Bulkhead.Type.THREADPOOL)
+    //@TimeLimiter(name = "payment")
+    @CircuitBreaker(name = "payment")
+    fun getPaymentStatusAsync(id: Int): CompleteFuture<OrderPaymentStatus> {
+        val orderEntity = orderRepository.findById(id).orElseThrow()
+        return paymentServiceClient.getPaymentStatus2(id);
     }
 
 }

@@ -8,12 +8,14 @@ services:
       APP_PORT: 8080
       APP_PROFILE: test
       PYROSCOPE_SERVER_ADDRESS: http://pyroscope1:4040
-      OTEL_SERVER_ADDRESS: http://tempo1:4317
+      OTEL_SERVER_ADDRESS: http://otel-collector:4317
       PG_USER: postgres
       PG_PASSWORD: pgdev01
       PG_HOST: postgres:5432
       KAFKA_HOST: kafka-kraft1:9092
       KAFKA_TOPICS: orders-finished
+      PAYMENT_SERVICE_BASE_URL: http://payment-service:8080/api
+      REDIS_URL: redis:6379
     restart: unless-stopped
     volumes:
       - ./logs/orders:/app/logs
@@ -30,12 +32,13 @@ services:
       APP_PORT: 8080
       APP_PROFILE: test
       PYROSCOPE_SERVER_ADDRESS: http://pyroscope1:4040
-      OTEL_SERVER_ADDRESS: http://tempo1:4317
+      OTEL_SERVER_ADDRESS: http://otel-collector:4317
       PG_USER: postgres
       PG_PASSWORD: pgdev01
       PG_HOST: postgres:5432
       KAFKA_HOST: kafka-kraft1:9092
       KAFKA_TOPICS: orders,orders-finished
+      REDIS_URL: redis:6379
     restart: unless-stopped
     volumes:
       - ./logs/payments:/app/logs
@@ -52,12 +55,13 @@ services:
       APP_PORT: 8080
       APP_PROFILE: test
       PYROSCOPE_SERVER_ADDRESS: http://pyroscope1:4040
-      OTEL_SERVER_ADDRESS: http://tempo1:4317
+      OTEL_SERVER_ADDRESS: http://otel-collector:4317
       PG_USER: postgres
       PG_PASSWORD: pgdev01
       PG_HOST: postgres:5432
       KAFKA_HOST: kafka-kraft1:9092
       KAFKA_TOPICS: orders,orders-finished
+      REDIS_URL: redis:6379
     restart: unless-stopped
     volumes:
       - ./logs/stocks:/app/logs

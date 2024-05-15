@@ -2,6 +2,8 @@ spring.application.name: payment
 
 server:
   port: ${APP_PORT:8080}
+  servlet:
+    context-path: /api
 
 logging:
   level:
@@ -19,6 +21,10 @@ logging:
       web:
         servlet.mvc: DEBUG
         client.RestClient: DEBUG
+
+management.health:
+  circuitbreakers.enabled: true
+  ratelimiters.enabled: true
 
 spring.datasource:
   hikari:
@@ -61,3 +67,8 @@ spring.kafka:
     properties:
       spring.json.trusted.packages: "*"
       isolation.level: read_committed
+
+spring.data.redis:
+  database: 0
+  url: redis://${REDIS_URL:localhost:6379}
+  timeout: 60000

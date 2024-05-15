@@ -27,10 +27,15 @@ dependencies {
     //
     // implementation 'org.hibernate.orm:hibernate-envers:6.4.4.Final'
     //
+    implementation "io.github.resilience4j:resilience4j-spring-boot3"
+    implementation "io.github.resilience4j:resilience4j-all"
+    implementation "io.github.resilience4j:resilience4j-kotlin"
+    //
     //implementation 'net.ttddyy:datasource-proxy:1.10'
     //implementation 'com.tailrocks.graphql:graphql-datetime-spring-boot-starter:6.0.0'
     //
     implementation 'org.postgresql:postgresql'
+    runtimeOnly 'io.opentelemetry.instrumentation:opentelemetry-logback-mdc-1.0:2.3.0-alpha'
     //
     //testImplementation 'org.springframework:spring-webflux'
     //testImplementation 'org.springframework.graphql:spring-graphql-test'

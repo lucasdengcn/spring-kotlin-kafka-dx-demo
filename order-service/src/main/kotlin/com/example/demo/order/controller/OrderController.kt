@@ -1,6 +1,7 @@
 package com.example.demo.order.controller
 
 import com.example.demo.domain.Order
+import com.example.demo.order.integration.payment.model.OrderPaymentStatus
 import com.example.demo.order.service.OrderService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -31,4 +32,8 @@ class OrderController (val orderService: OrderService) {
         return ResponseEntity.ok(orderService.all());
     }
 
+    @GetMapping("/{id}/payment/status")
+    fun getPaymentStatus(@PathVariable id: Int) : ResponseEntity<OrderPaymentStatus> {
+        return ResponseEntity.ok(orderService.getPaymentStatus(id));
+    }
 }

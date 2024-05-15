@@ -1,0 +1,1 @@
+http://localhost:48080/api/actuator/health
