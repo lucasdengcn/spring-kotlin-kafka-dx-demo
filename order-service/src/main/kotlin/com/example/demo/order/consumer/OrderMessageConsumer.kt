@@ -10,8 +10,7 @@ import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 
 @Component
-class OrderMessageConsumer (val orderService: OrderService) {
-
+class OrderMessageConsumer(val orderService: OrderService) {
     companion object {
         val logger: Logger = LoggerFactory.getLogger(OrderMessageConsumer::class.java)
     }
@@ -20,12 +19,11 @@ class OrderMessageConsumer (val orderService: OrderService) {
     @Transactional("transactionManager")
     fun onEvent(order: Order) {
         logger.info("Event Received: $order")
-        when (order.status){
+        when (order.status) {
             OrderStatus.CONFIRMED -> orderService.updateStatus(order)
             OrderStatus.REJECTED -> orderService.updateStatus(order)
             OrderStatus.ROLLBACK -> orderService.updateStatus(order)
             else -> logger.info("incorrect status: $order")
         }
     }
-
 }

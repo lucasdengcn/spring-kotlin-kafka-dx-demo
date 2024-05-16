@@ -11,5 +11,5 @@ import org.springframework.scheduling.annotation.EnableAsync
 class OrderApplication
 
 fun main(args: Array<String>) {
-	runApplication<OrderApplication>(*args)
+    runApplication<OrderApplication>(*args)
 }

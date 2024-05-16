@@ -10,5 +10,5 @@ data class Order(
     val productCount: Int = 0,
     val price: Int = 0,
     var status: OrderStatus = OrderStatus.NEW,
-    var source: ActSource = ActSource.ORDER
+    var source: ActSource = ActSource.ORDER,
 )

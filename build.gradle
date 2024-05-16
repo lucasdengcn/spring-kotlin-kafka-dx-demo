@@ -7,6 +7,7 @@ plugins {
 	id 'org.jetbrains.kotlin.jvm' version '1.9.23'
 	id 'org.jetbrains.kotlin.plugin.spring' version '1.9.23'
 	id 'org.jetbrains.kotlin.plugin.jpa' version '1.9.23'
+	id 'org.jmailen.kotlinter' version "4.3.0"
 }
 
 group = 'com.example.demo'
@@ -59,6 +60,7 @@ subprojects {
 	apply plugin: 'org.jetbrains.kotlin.plugin.spring'
 	apply plugin: 'org.jetbrains.kotlin.plugin.jpa'
 	apply plugin: 'maven-publish'
+	apply plugin: 'org.jmailen.kotlinter'
 
 	group = 'com.example.demo'
 	version = '0.0.1-SNAPSHOT'
@@ -103,4 +105,14 @@ subprojects {
 		useJUnitPlatform()
 	}
 
+}
+
+kotlinter {
+	failBuildWhenCannotAutoFormat = false
+	ignoreFailures = false
+	reporters = ['checkstyle', 'plain']
+}
+
+tasks.named('check') {
+	dependsOn 'installKotlinterPrePushHook'
 }

@@ -10,10 +10,11 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/orders")
-class OrderPaymentController (val paymentService: PaymentService) {
-
+class OrderPaymentController(val paymentService: PaymentService) {
     @GetMapping("/{id}/status")
-    fun getPaymentStatus(@PathVariable id: Int) : ResponseEntity<OrderPaymentStatus> {
-        return ResponseEntity.ok(paymentService.getPaymentStatusByOrderId(id));
+    fun getPaymentStatus(
+        @PathVariable id: Int,
+    ): ResponseEntity<OrderPaymentStatus> {
+        return ResponseEntity.ok(paymentService.getPaymentStatusByOrderId(id))
     }
 }

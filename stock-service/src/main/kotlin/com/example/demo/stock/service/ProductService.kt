@@ -10,15 +10,12 @@ import org.slf4j.LoggerFactory
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import kotlin.math.log
 
 @Service
-class ProductService (
+class ProductService(
     val productRepository: ProductRepository,
-    val kafkaTemplate: KafkaTemplate<String, Order>
-)
-{
-
+    val kafkaTemplate: KafkaTemplate<String, Order>,
+) {
     companion object {
         val logger: Logger = LoggerFactory.getLogger(ProductService::class.java)
     }
@@ -26,7 +23,7 @@ class ProductService (
     @Transactional("transactionManager")
     fun reserve(order: Order) {
         logger.info("reserve order: $order")
-        if (order.status != OrderStatus.NEW){
+        if (order.status != OrderStatus.NEW) {
             return
         }
         val product = findProduct(order)

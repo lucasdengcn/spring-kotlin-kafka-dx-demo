@@ -13,19 +13,17 @@ import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.concurrent.atomic.AtomicInteger
-import java.util.concurrent.atomic.AtomicLong
 
 private const val TOPIC_PAYMENT = "payment-orders"
 
 @Service
-class PaymentService (
+class PaymentService(
     val customerRepository: CustomerRepository,
-    val kafkaTemplate: KafkaTemplate<String, Order>)
-{
-
+    val kafkaTemplate: KafkaTemplate<String, Order>,
+) {
     companion object {
         val logger: Logger = LoggerFactory.getLogger(PaymentService::class.java)
-        val counter : AtomicInteger = AtomicInteger();
+        val counter: AtomicInteger = AtomicInteger()
     }
 
     @Transactional("transactionManager")
@@ -49,7 +47,7 @@ class PaymentService (
     @Transactional("kafkaTransactionManager")
     fun sendMessage(order: Order) {
         val future = kafkaTemplate.send(TOPIC_PAYMENT, order.id.toString(), order)
-        future.whenComplete { t, u ->  logger.info("Sent: $order") }
+        future.whenComplete { t, u -> logger.info("Sent: $order") }
     }
 
     @Transactional("transactionManager")
@@ -73,23 +71,21 @@ class PaymentService (
         return customer
     }
 
-
     fun getPaymentStatusByOrderId(id: Int): OrderPaymentStatus? {
-        if (id % 3 == 0){
+        if (id % 3 == 0) {
             throw BusinessException("order id $id not found")
         }
         val count = counter.incrementAndGet()
         logger.info("getPaymentStatusByOrderId: $id, $count")
-        if (count % 3 == 0){
+        if (count % 3 == 0) {
             throw BusinessException("order id $id: unexpected error")
         }
-        if (id % 5 == 0){
-            return OrderPaymentStatus(id, 0, "Failed");
+        if (id % 5 == 0) {
+            return OrderPaymentStatus(id, 0, "Failed")
         }
-        if (id % 2 == 0){
-            return OrderPaymentStatus(id, 1, "Ongoing");
+        if (id % 2 == 0) {
+            return OrderPaymentStatus(id, 1, "Ongoing")
         }
-        return OrderPaymentStatus(id, 2, "Payed");
+        return OrderPaymentStatus(id, 2, "Payed")
     }
-
 }

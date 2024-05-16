@@ -11,21 +11,19 @@ import kotlin.random.Random
 
 @SpringBootTest
 @ActiveProfiles("test")
-class CustomerRepositoryTests (@Autowired val customerRepository: CustomerRepository) {
-
+class CustomerRepositoryTests(
+    @Autowired val customerRepository: CustomerRepository,
+) {
     @Test
-    fun generateCustomers(){
-        val faker = Faker();
-        val customers = mutableListOf<Customer>();
+    fun generateCustomers() {
+        val faker = Faker()
+        val customers = mutableListOf<Customer>()
         for (i in 0 until 100) {
             val count = Random.nextInt(100, 1000)
             var fullName = faker.name().fullName()
-            if (fullName.length > 100){
-                fullName = fullName.substring(0, 100)
-            }
+            if (fullName.length > 100) fullName.substring(0, 100).also { fullName = it }
             customers.add(Customer(null, fullName, count, 0))
         }
         customerRepository.saveAll(customers)
     }
-
 }

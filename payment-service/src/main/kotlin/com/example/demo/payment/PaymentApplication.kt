@@ -11,5 +11,5 @@ import org.springframework.scheduling.annotation.EnableAsync
 class PaymentApplication
 
 fun main(args: Array<String>) {
-	runApplication<PaymentApplication>(*args)
+    runApplication<PaymentApplication>(*args)
 }

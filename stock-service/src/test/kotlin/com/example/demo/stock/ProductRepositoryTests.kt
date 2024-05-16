@@ -11,12 +11,13 @@ import kotlin.random.Random
 
 @SpringBootTest
 @ActiveProfiles("test")
-class ProductRepositoryTests (@Autowired val productRepository: ProductRepository) {
-
+class ProductRepositoryTests(
+    @Autowired val productRepository: ProductRepository,
+) {
     @Test
-    fun generateProducts(){
-        val faker = Faker();
-        val products = mutableListOf<Product>();
+    fun generateProducts() {
+        val faker = Faker()
+        val products = mutableListOf<Product>()
         for (i in 0 until 10) {
             val count = Random.nextInt(100, 1000)
             var title = faker.book().title()
@@ -24,5 +25,4 @@ class ProductRepositoryTests (@Autowired val productRepository: ProductRepositor
         }
         productRepository.saveAll(products)
     }
-
 }

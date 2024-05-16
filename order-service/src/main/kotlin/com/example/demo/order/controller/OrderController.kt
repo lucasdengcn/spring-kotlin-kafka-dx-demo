@@ -13,27 +13,32 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/orders")
-class OrderController (val orderService: OrderService) {
-
+class OrderController(val orderService: OrderService) {
     @PostMapping("/0")
-    fun create(@RequestBody orderRequest: Order) : ResponseEntity<Order> {
-        val order = orderService.create(orderRequest);
-        return ResponseEntity.ok(order);
+    fun create(
+        @RequestBody orderRequest: Order,
+    ): ResponseEntity<Order> {
+        val order = orderService.create(orderRequest)
+        return ResponseEntity.ok(order)
     }
 
     @PostMapping("/{limit}")
-    fun generate(@PathVariable limit: Int) : ResponseEntity<Int> {
-        orderService.generate(limit);
-        return ResponseEntity.ok(limit);
+    fun generate(
+        @PathVariable limit: Int,
+    ): ResponseEntity<Int> {
+        orderService.generate(limit)
+        return ResponseEntity.ok(limit)
     }
 
     @GetMapping("/")
-    fun all() : ResponseEntity<List<Order>> {
-        return ResponseEntity.ok(orderService.all());
+    fun all(): ResponseEntity<List<Order>> {
+        return ResponseEntity.ok(orderService.all())
     }
 
     @GetMapping("/{id}/payment/status")
-    fun getPaymentStatus(@PathVariable id: Int) : ResponseEntity<OrderPaymentStatus> {
-        return ResponseEntity.ok(orderService.getPaymentStatus(id));
+    fun getPaymentStatus(
+        @PathVariable id: Int,
+    ): ResponseEntity<OrderPaymentStatus> {
+        return ResponseEntity.ok(orderService.getPaymentStatus(id))
     }
 }

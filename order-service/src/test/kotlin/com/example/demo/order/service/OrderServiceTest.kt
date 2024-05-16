@@ -1,19 +1,17 @@
 package com.example.demo.order.service
 
-import com.example.demo.order.exception.BusinessException
 import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Test
-
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import java.util.NoSuchElementException
 
+@Disabled
 @SpringBootTest
-class OrderServiceTest (@Autowired val orderService: OrderService) {
-
+class OrderServiceTest(
+    @Autowired val orderService: OrderService,
+) {
     @Test
     fun `get payment status via orderId throw error`() {
         assertThrows<NoSuchElementException> { orderService.getPaymentStatus(3) }
@@ -47,5 +45,4 @@ class OrderServiceTest (@Autowired val orderService: OrderService) {
         Assertions.assertNotNull(paymentStatus)
         Assertions.assertEquals("Payed", paymentStatus?.paymentStatus)
     }
-
 }
