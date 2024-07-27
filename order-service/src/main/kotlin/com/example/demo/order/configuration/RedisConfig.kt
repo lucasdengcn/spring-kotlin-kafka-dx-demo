@@ -28,16 +28,12 @@ import org.springframework.data.redis.serializer.StringRedisSerializer
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
 import java.time.Duration
 
-
 @Configuration
 @EnableCaching
 class RedisConfig {
-
     companion object {
         val logger: Logger = LoggerFactory.getLogger(RedisConfig::class.java)
     }
-
-
 
     @Bean
     fun redisConnectionFactory(redisProperties: RedisProperties): LettuceConnectionFactory {
@@ -51,7 +47,7 @@ class RedisConfig {
         redisProperties.getSentinel().getNodes().forEach { s ->
             sentinelConfig.sentinel(
                 redisProperties.host,
-                Integer.valueOf(s)
+                Integer.valueOf(s),
             )
         }
         // sentinelConfig.setPassword(RedisPassword.of(redisProperties.getPassword()))
@@ -72,19 +68,20 @@ class RedisConfig {
     @Bean
     fun redisTemplate(redisProperties: RedisProperties): RedisTemplate<String, Any> {
         //
-        val objectMapper = Jackson2ObjectMapperBuilder().failOnEmptyBeans(false)
-            .failOnUnknownProperties(false)
-            .indentOutput(false)
-            .serializationInclusion(JsonInclude.Include.NON_NULL)
-            .modules( // Optional
-                Jdk8Module(),  // Dates/Times
-                JavaTimeModule()
-            )
-            .featuresToDisable(
-                SerializationFeature.WRITE_DATES_AS_TIMESTAMPS,
-                DeserializationFeature.READ_DATE_TIMESTAMPS_AS_NANOSECONDS,
-                SerializationFeature.WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS
-            ).build<ObjectMapper>()
+        val objectMapper =
+            Jackson2ObjectMapperBuilder().failOnEmptyBeans(false)
+                .failOnUnknownProperties(false)
+                .indentOutput(false)
+                .serializationInclusion(JsonInclude.Include.NON_NULL)
+                .modules( // Optional
+                    Jdk8Module(), // Dates/Times
+                    JavaTimeModule(),
+                )
+                .featuresToDisable(
+                    SerializationFeature.WRITE_DATES_AS_TIMESTAMPS,
+                    DeserializationFeature.READ_DATE_TIMESTAMPS_AS_NANOSECONDS,
+                    SerializationFeature.WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS,
+                ).build<ObjectMapper>()
         //
         objectMapper.activateDefaultTyping(objectMapper.polymorphicTypeValidator, ObjectMapper.DefaultTyping.NON_FINAL)
         //
@@ -98,5 +95,4 @@ class RedisConfig {
         redisTemplate.connectionFactory = redisConnectionFactory(redisProperties)
         return redisTemplate
     }
-
 }

@@ -1,20 +1,17 @@
 package com.example.demo.order.service
 
 import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.redis.core.RedisTemplate
 import java.time.LocalDate
 
-//@Disabled
+// @Disabled
 @SpringBootTest
-class RedisServiceTests (
+class RedisServiceTests(
     @Autowired val redisTemplate: RedisTemplate<String, Any>,
 ) {
-
     @Test
     fun `set string`() {
         redisTemplate.opsForValue().set("foo2", "bar12")
