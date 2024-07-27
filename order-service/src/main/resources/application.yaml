@@ -91,10 +91,21 @@ spring.kafka:
       default.value.serde: org.springframework.kafka.support.serializer.JsonSerde
     state-dir: /tmp/kafka-streams-1
 
+#spring.data.redis:
+#  database: 0
+#  url: redis://${REDIS_URL:localhost:6379}
+#  timeout: 60000
+
 spring.data.redis:
-  database: 0
-  url: redis://${REDIS_URL:localhost:6379}
-  timeout: 60000
+  sentinel:
+    master: mymaster
+    nodes : 26379,26380,26381
+  clientType: lettuce
+  lettuce:
+    shutdown-timeout: 2000ms
+  #password: redisauth
+  port: 26379
+  host: 127.0.0.1
 
 resilience4j.circuitbreaker:
   configs:
