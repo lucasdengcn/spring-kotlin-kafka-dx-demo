@@ -96,16 +96,27 @@ spring.kafka:
 #  url: redis://${REDIS_URL:localhost:6379}
 #  timeout: 60000
 
+#spring.data.redis:
+#  sentinel:
+#    master: mymaster
+#    nodes : 26379,26380,26381
+#  clientType: lettuce
+#  lettuce:
+#    shutdown-timeout: 2000ms
+#  #password: redisauth
+#  port: 26379
+#  host: 127.0.0.1
+
 spring.data.redis:
-  sentinel:
-    master: mymaster
-    nodes : 26379,26380,26381
-  clientType: lettuce
-  lettuce:
-    shutdown-timeout: 2000ms
-  #password: redisauth
-  port: 26379
-  host: 127.0.0.1
+  cluster:
+    nodes:
+      - 127.0.0.1:6371
+      - 127.0.0.1:6372
+      - 127.0.0.1:6373
+      - 127.0.0.1:6374
+      - 127.0.0.1:6375
+      - 127.0.0.1:6376
+    maxRedirects: 2
 
 resilience4j.circuitbreaker:
   configs:

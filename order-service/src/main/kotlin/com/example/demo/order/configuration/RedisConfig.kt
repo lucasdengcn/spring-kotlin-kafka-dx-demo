@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
 import org.springframework.data.redis.cache.RedisCacheConfiguration
 import org.springframework.data.redis.cache.RedisCacheManager
+import org.springframework.data.redis.connection.RedisClusterConfiguration
 import org.springframework.data.redis.connection.RedisSentinelConfiguration
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory
@@ -42,16 +43,25 @@ class RedisConfig {
         //
         val clientConfig = LettuceClientConfiguration.builder().readFrom(ReadFrom.REPLICA_PREFERRED).build()
         //
-        val sentinelConfig: RedisSentinelConfiguration =
-            RedisSentinelConfiguration().master(redisProperties.getSentinel().getMaster())
-        redisProperties.getSentinel().getNodes().forEach { s ->
-            sentinelConfig.sentinel(
-                redisProperties.host,
-                Integer.valueOf(s),
-            )
+        if (redisProperties.sentinel != null && !redisProperties.sentinel.nodes.isEmpty()) {
+            val sentinelConfig: RedisSentinelConfiguration =
+                RedisSentinelConfiguration().master(redisProperties.sentinel.master)
+            redisProperties.sentinel.nodes.forEach { s ->
+                sentinelConfig.sentinel(
+                    redisProperties.host,
+                    Integer.valueOf(s),
+                )
+            }
+            // sentinelConfig.setPassword(RedisPassword.of(redisProperties.getPassword()))
+            return LettuceConnectionFactory(sentinelConfig, clientConfig)
         }
-        // sentinelConfig.setPassword(RedisPassword.of(redisProperties.getPassword()))
-        return LettuceConnectionFactory(sentinelConfig, clientConfig)
+        //
+        if (redisProperties.cluster != null){
+            val clusterConfig: RedisClusterConfiguration = RedisClusterConfiguration(redisProperties.cluster.nodes)
+            return LettuceConnectionFactory(clusterConfig, clientConfig)
+        }
+        //
+        return LettuceConnectionFactory(redisProperties.host, redisProperties.port)
     }
 
     @Bean

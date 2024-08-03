@@ -1,0 +1,183 @@
+spring.application.name: brokers
+
+server:
+  port: ${APP_PORT:8084}
+  servlet:
+    context-path: /api
+
+info:
+  name: ${spring.application.name}
+  description: order service
+  environment: ${spring.profiles.active}
+  version: 0.0.1
+
+logging:
+  level:
+    root: INFO
+    org.hibernate: ERROR
+    org.hibernate.stat: INFO
+    org.hibernate.SQL: DEBUG
+    com.example.demo: DEBUG
+    com.zaxxer: INFO
+    org.springframework:
+      kafka:
+        support: INFO
+        transaction: DEBUG
+      graphql: TRACE
+      web:
+        servlet.mvc: DEBUG
+        client.RestClient: DEBUG
+
+management:
+  endpoints.web.exposure.include: '*'
+  endpoint.health.show-details: always
+  health:
+    circuitbreakers.enabled: true
+    ratelimiters.enabled: true
+
+management.metrics:
+  tags.application: ${spring.application.name}
+  distribution.percentiles-histogram.http.server.requests: true
+  distribution.percentiles-histogram.resilience4j.circuitbreaker.calls: true
+
+# jdbc
+spring.datasource:
+  hikari:
+    connectionTimeout: 20000
+    maximumPoolSize: 5
+  type: com.zaxxer.hikari.HikariDataSource
+  driver-class-name: org.postgresql.Driver
+  url: jdbc:postgresql://${PG_HOST:localhost:15432}/postgres?currentSchema=${PG_SCHEMA:order-service}&autoReconnect=true&serverTimezone=UTC&characterEncoding=utf-8&allowMultiQueries=true&stringtype=unspecified
+  username: ${PG_USER:postgres}
+  password: ${PG_PASSWORD:pgdev01}
+
+# amqp
+spring.rabbitmq:
+  host: ${RABBITMQ_HOST:localhost}
+  port: ${RABBITMQ_PORT:5672}
+  username: ${RABBITMQ_USERNAME:client01}
+  password: ${RABBITMQ_PASSWORD:client01}
+  virtual-host: ${RABBITMQ_VIRTUALHOST:vhost-dev}
+  publisher-confirm-type: CORRELATED
+  publisher-returns: true
+  template:
+    mandatory: true
+  listener:
+    type: simple
+    simple:
+      concurrency: 1
+      max-concurrency: 2
+      batch-size: 2
+      auto-startup: true
+      acknowledge-mode: MANUAL
+      prefetch: 5
+
+#
+#resilience4j.circuitbreaker:
+#  configs:
+#    default:
+#      registerHealthIndicator: true
+#      slidingWindowSize: 10
+#      minimumNumberOfCalls: 5
+#      permittedNumberOfCallsInHalfOpenState: 3
+#      automaticTransitionFromOpenToHalfOpenEnabled: true
+#      waitDurationInOpenState: 5s
+#      failureRateThreshold: 50
+#      eventConsumerBufferSize: 10
+#      recordExceptions:
+#        - org.springframework.web.client.HttpServerErrorException
+#        - org.springframework.web.client.RestClientException
+#        - java.util.concurrent.TimeoutException
+#        - java.io.IOException
+#      ignoreExceptions:
+#        - com.example.demo.order.exception.BusinessException
+#    shared:
+#      slidingWindowSize: 100
+#      permittedNumberOfCallsInHalfOpenState: 30
+#      waitDurationInOpenState: 1s
+#      failureRateThreshold: 50
+#      eventConsumerBufferSize: 10
+#      ignoreExceptions:
+#        - com.example.demo.order.exception.BusinessException
+#  instances:
+#    payment:
+#      baseConfig: default
+#    backendB:
+#      registerHealthIndicator: true
+#      slidingWindowSize: 10
+#      minimumNumberOfCalls: 10
+#      permittedNumberOfCallsInHalfOpenState: 3
+#      waitDurationInOpenState: 5s
+#      failureRateThreshold: 50
+#      eventConsumerBufferSize: 10
+#      recordFailurePredicate: com.example.demo.order.exception.RecordFailurePredicate
+#
+#resilience4j.retry:
+#  configs:
+#    default:
+#      maxAttempts: 3
+#      waitDuration: 2000
+#      retryExceptions:
+#        - org.springframework.web.client.HttpServerErrorException
+#        - org.springframework.web.client.RestClientException
+#        - java.util.concurrent.TimeoutException
+#        - java.io.IOException
+#      ignoreExceptions:
+#        - com.example.demo.order.exception.BusinessException
+#  instances:
+#    payment:
+#      baseConfig: default
+#    backendB:
+#      baseConfig: default
+#
+#resilience4j.bulkhead:
+#  configs:
+#    default:
+#      maxConcurrentCalls: 10
+#  instances:
+#    payment:
+#      maxConcurrentCalls: 5
+#    backendB:
+#      maxWaitDuration: 10ms
+#      maxConcurrentCalls: 20
+#
+#resilience4j.thread-pool-bulkhead:
+#  configs:
+#    default:
+#      maxThreadPoolSize: 4
+#      coreThreadPoolSize: 2
+#      queueCapacity: 2
+#  instances:
+#    payment:
+#      baseConfig: default
+#    backendB:
+#      maxThreadPoolSize: 1
+#      coreThreadPoolSize: 1
+#      queueCapacity: 1
+#
+#resilience4j.ratelimiter:
+#  configs:
+#    default:
+#      registerHealthIndicator: false
+#      limitForPeriod: 10
+#      limitRefreshPeriod: 1s
+#      timeoutDuration: 0
+#      eventConsumerBufferSize: 100
+#  instances:
+#    payment:
+#      baseConfig: default
+#    backendB:
+#      limitForPeriod: 6
+#      limitRefreshPeriod: 500ms
+#      timeoutDuration: 3s
+#
+#resilience4j.timelimiter:
+#  configs:
+#    default:
+#      cancelRunningFuture: false
+#      timeoutDuration: 100ms
+#  instances:
+#    payment:
+#      baseConfig: default
+#    backendB:
+#      baseConfig: default
