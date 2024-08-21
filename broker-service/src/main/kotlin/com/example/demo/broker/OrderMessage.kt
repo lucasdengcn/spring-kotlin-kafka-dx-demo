@@ -12,6 +12,6 @@ class OrderMessage(
 ) {
     override fun toString(): String {
         return "OrderMessage [orderId=$orderId, price=$price, quantity=$quantity, " +
-                "productId=$productId, dateTime=$dateTime, priority=$priority]"
+            "productId=$productId, dateTime=$dateTime, priority=$priority]"
     }
 }
