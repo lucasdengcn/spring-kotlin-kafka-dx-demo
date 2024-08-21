@@ -1,17 +1,14 @@
 package com.example.demo.logging
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-import ch.qos.logback.classic.PatternLayout;
-import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.classic.PatternLayout
+import ch.qos.logback.classic.spi.ILoggingEvent
+import java.util.ArrayList
+import java.util.regex.Matcher
+import java.util.regex.Pattern
+import java.util.stream.Collectors
+import java.util.stream.IntStream
 
 class MaskingPatternLayout : PatternLayout() {
-
     private var multilinePattern: Pattern? = null
     private val maskPatterns: MutableList<String> = ArrayList()
 
