@@ -11,10 +11,8 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
 
-
 @Configuration
 class RabbitConfiguration {
-
     companion object {
         val logger: Logger = LoggerFactory.getLogger(RabbitConfiguration::class.java)
     }
@@ -28,19 +26,22 @@ class RabbitConfiguration {
 
     @Bean
     @Primary
-    fun rabbitTemplate(connectionFactory: ConnectionFactory,
-                       rabbitProperties: RabbitProperties,
-                       messageConverter: Jackson2JsonMessageConverter) : RabbitTemplate {
+    fun rabbitTemplate(
+        connectionFactory: ConnectionFactory,
+        rabbitProperties: RabbitProperties,
+        messageConverter: Jackson2JsonMessageConverter,
+    ): RabbitTemplate {
         //
         var template = RabbitTemplate(connectionFactory)
         template.setMandatory(rabbitProperties.template.mandatory)
-        template.messageConverter = messageConverter;
+        template.messageConverter = messageConverter
         //
         template.setConfirmCallback { correlationData, ack, cause ->
-            if (ack){
-                logger.info("confirm callback on ACK: ${correlationData}, $cause")
-            } else {
-                logger.error("confirm callback on NACK: ${correlationData}, $cause")
+            if (ack)
+                {
+                    logger.info("confirm callback on ACK: $correlationData, $cause")
+                } else {
+                logger.error("confirm callback on NACK: $correlationData, $cause")
             }
         }
         //
