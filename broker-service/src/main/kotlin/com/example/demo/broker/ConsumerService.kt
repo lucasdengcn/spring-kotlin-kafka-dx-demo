@@ -27,19 +27,17 @@ class ConsumerService {
         @Payload message: OrderMessage,
         channel: Channel,
         @Headers heads: Map<String, Object>,
-    )  {
+    ) {
         val redelivered = heads.get(AmqpHeaders.REDELIVERED) as Boolean
         logger.info("Consumed message [$redelivered] $message")
         var tagId = heads.get(AmqpHeaders.DELIVERY_TAG) as Long
-        if (message.quantity > 10)
-            {
-                if (redelivered)
-                    {
-                        channel.basicReject(tagId, false)
-                    } else {
-                    channel.basicNack(tagId, false, true)
-                }
+        if (message.quantity > 10) {
+            if (redelivered) {
+                channel.basicReject(tagId, false)
             } else {
+                channel.basicNack(tagId, false, true)
+            }
+        } else {
             channel.basicAck(tagId, false)
         }
     }
@@ -50,7 +48,7 @@ class ConsumerService {
         @Payload message: OrderMessage,
         channel: Channel,
         @Headers heads: Map<String, Object>,
-    )  {
+    ) {
         val redelivered = heads.get(AmqpHeaders.REDELIVERED) as Boolean
         logger.info("header $heads")
         logger.info("Consumed DLX message [$redelivered] $message")
@@ -64,7 +62,7 @@ class ConsumerService {
         @Payload message: OrderMessage,
         channel: Channel,
         @Headers heads: Map<String, Object>,
-    )  {
+    ) {
         val redelivered = heads.get(AmqpHeaders.REDELIVERED) as Boolean
         logger.info("header $heads")
         logger.info("Consumed Delay message [$redelivered] $message")
@@ -84,7 +82,7 @@ class ConsumerService {
         @Payload message: OrderMessage,
         channel: Channel,
         @Headers heads: Map<String, Object>,
-    )  {
+    ) {
         val lastInBatch = heads.get(AmqpHeaders.LAST_IN_BATCH)
         logger.info("Consumed message [p5][$lastInBatch] $message")
         var tagId = heads.get(AmqpHeaders.DELIVERY_TAG) as Long
@@ -104,7 +102,7 @@ class ConsumerService {
         @Payload message: OrderMessage,
         channel: Channel,
         @Headers heads: Map<String, Object>,
-    )  {
+    ) {
         val lastInBatch = heads.get(AmqpHeaders.LAST_IN_BATCH)
         logger.info("Consumed message [p4][$lastInBatch] $message")
         var tagId = heads.get(AmqpHeaders.DELIVERY_TAG) as Long

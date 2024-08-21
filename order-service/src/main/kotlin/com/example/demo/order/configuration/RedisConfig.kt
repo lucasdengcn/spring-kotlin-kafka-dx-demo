@@ -56,11 +56,10 @@ class RedisConfig {
             return LettuceConnectionFactory(sentinelConfig, clientConfig)
         }
         //
-        if (redisProperties.cluster != null)
-            {
-                val clusterConfig: RedisClusterConfiguration = RedisClusterConfiguration(redisProperties.cluster.nodes)
-                return LettuceConnectionFactory(clusterConfig, clientConfig)
-            }
+        if (redisProperties.cluster != null) {
+            val clusterConfig: RedisClusterConfiguration = RedisClusterConfiguration(redisProperties.cluster.nodes)
+            return LettuceConnectionFactory(clusterConfig, clientConfig)
+        }
         //
         return LettuceConnectionFactory(redisProperties.host, redisProperties.port)
     }

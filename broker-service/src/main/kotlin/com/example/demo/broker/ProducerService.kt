@@ -24,14 +24,14 @@ class ProducerService(private val rabbitTemplate: RabbitTemplate) {
     fun sendDirectOrder(
         message: OrderMessage,
         correlationData: CorrelationData,
-    )  {
+    ) {
         rabbitTemplate.convertAndSend(EX_DEV_DIRECT, ROUTING_KEY_ORDER_V2, message, correlationData)
     }
 
     fun sendDirectNotFound(
         message: OrderMessage,
         correlationData: CorrelationData,
-    )  {
+    ) {
         rabbitTemplate.convertAndSend(EX_DEV_DIRECT, ROUTING_KEY_ORDER_NOT_FOUND, message, correlationData)
     }
 
@@ -39,7 +39,7 @@ class ProducerService(private val rabbitTemplate: RabbitTemplate) {
         message: OrderMessage,
         correlationData: CorrelationData,
         priority: Int,
-    )  {
+    ) {
         rabbitTemplate.convertAndSend(
             EX_DEV_DIRECT,
             ROUTING_KEY_ORDER_V3,
@@ -56,7 +56,7 @@ class ProducerService(private val rabbitTemplate: RabbitTemplate) {
         message: OrderMessage,
         correlationData: CorrelationData,
         seconds: Int,
-    )  {
+    ) {
         // val now = LocalDateTime.now()
         // var toEpochSecond = now.plusSeconds(seconds.toLong()).atZone(ZoneId.of("UTC")).toEpochSecond()
         //

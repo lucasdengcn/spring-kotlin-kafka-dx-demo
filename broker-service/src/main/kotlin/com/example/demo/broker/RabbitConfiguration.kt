@@ -37,10 +37,9 @@ class RabbitConfiguration {
         template.messageConverter = messageConverter
         //
         template.setConfirmCallback { correlationData, ack, cause ->
-            if (ack)
-                {
-                    logger.info("confirm callback on ACK: $correlationData, $cause")
-                } else {
+            if (ack) {
+                logger.info("confirm callback on ACK: $correlationData, $cause")
+            } else {
                 logger.error("confirm callback on NACK: $correlationData, $cause")
             }
         }
