@@ -11,6 +11,7 @@ class OrderMessage(
     val priority: Int,
 ) {
     override fun toString(): String {
-        return "OrderMessage [orderId=$orderId, price=$price, quantity=$quantity, productId=$productId, dateTime=$dateTime, priority=$priority]"
+        return "OrderMessage [orderId=$orderId, price=$price, quantity=$quantity, " +
+                "productId=$productId, dateTime=$dateTime, priority=$priority]"
     }
 }
