@@ -9,6 +9,18 @@
         </encoder>
     </appender>
 
+    <appender name="MASKING" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="com.example.demo.logging.MaskingPatternLayout">
+                <maskPattern>\"SSN\"\s*:\s*\"(.*?)\"</maskPattern> <!-- SSN JSON pattern -->
+                <maskPattern>\"address\"\s*:\s*\"(.*?)\"</maskPattern> <!-- Address JSON pattern -->
+                <maskPattern>(\d+\.\d+\.\d+\.\d+)</maskPattern> <!-- Ip address IPv4 pattern -->
+                <maskPattern>([\w.-]+@[\w.-]+\.\w+)</maskPattern> <!-- Email pattern -->
+                <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            </layout>
+        </encoder>
+    </appender>
+
     <!-- Just wrap your logging appender, for example ConsoleAppender, with OpenTelemetryAppender -->
     <appender name="OTEL" class="io.opentelemetry.instrumentation.logback.mdc.v1_0.OpenTelemetryAppender">
         <appender-ref ref="CONSOLE"/>
