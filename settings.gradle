@@ -19,4 +19,5 @@ include 'payment-service'
 include 'stock-service'
 include 'broker-service'
 include 'common-apm'
+include 'streaming-service'
 

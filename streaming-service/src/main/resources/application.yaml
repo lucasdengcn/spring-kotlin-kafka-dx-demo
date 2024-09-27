@@ -1,0 +1,51 @@
+spring.application.name: streaming
+
+server:
+  port: ${APP_PORT:8085}
+  servlet:
+    context-path: /api
+
+info:
+  name: ${spring.application.name}
+  description: order service
+  environment: ${spring.profiles.active}
+  version: 0.0.1
+
+logging:
+  level:
+    root: INFO
+    org.hibernate: ERROR
+    org.hibernate.stat: INFO
+    org.hibernate.SQL: DEBUG
+    com.example.demo: DEBUG
+    com.zaxxer: INFO
+    org.springframework:
+      kafka:
+        support: INFO
+        transaction: DEBUG
+      graphql: TRACE
+      web:
+        servlet.mvc: DEBUG
+        client.RestClient: DEBUG
+
+management:
+  endpoints.web.exposure.include: '*'
+  endpoint.health.show-details: always
+
+management.metrics:
+  tags.application: ${spring.application.name}
+
+spring:
+  mvc:
+    problemdetails:
+      enabled: true
+  application:
+    name: streaming-demo
+  datasource:
+    url: jdbc:h2:mem:dummy.db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=TRUE;AUTO_RECONNECT=TRUE;MODE=PostgreSQL;
+    username: sa
+    password: password
+    driverClassName: org.h2.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: true
